@@ -100,7 +100,7 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {}
-
+//zach wuz here
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -201,7 +201,7 @@ if (left_bumper.get_value() || right_bumper.get_value())
 		      arm.move_relative(1800,100); // This is 100 because it's a 100rpm motor
 		    }
 		while (master.get_digital(DIGITAL_B)){
-
+//wrgwrgwtgwrgwtgrs
 				 // Gets the largest object
 				 //std::cout << "sig: " << rtn.signature;
 				 //pros::delay(2);
