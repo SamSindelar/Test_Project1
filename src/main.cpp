@@ -222,7 +222,7 @@ if (left_bumper.get_value() || right_bumper.get_value())
  			  }
 }
 //Arm control
-/*		if (master.get_digital(DIGITAL_R1))
+	if (master.get_digital(DIGITAL_R1))
 		{
       arm.move_velocity(100); // This is 100 because it's a 100rpm motor
     }
@@ -252,7 +252,7 @@ if (left_bumper.get_value() || right_bumper.get_value())
     pros::delay(2);
 
 
-*/
+
     //pros::delay(2);
 
 //Clawbot code for Arcade Control
@@ -270,7 +270,7 @@ pros::Motor left_wheels (LEFT_WHEELS_PORT);
     right_wheels.move(right);
 
     pros::delay(2);
-*/
+
 
 //Default PROS code
 	/*pros::Controller master(pros::E_CONTROLLER_MASTER);
