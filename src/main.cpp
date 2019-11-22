@@ -8,6 +8,8 @@
 
 #define VISION_PORT 7
 
+#define GYRO_PORT 2
+
 #define ARM_PORT 1
 
 //#define CLAW_PORT 3
@@ -46,7 +48,7 @@
 
 
 
-
+// THIS IS A TEST FOR THE FIRST COMMIT TO BRANCH Sam_S
 
 /**
  * A callback function for LLEMU's center button.
@@ -163,6 +165,14 @@ void opcontrol() {
   pros::Controller master (CONTROLLER_MASTER);
 
 
+//GYRO stuff
+pros::ADIGyro gyro (GYRO_PORT);
+  while (true) {
+    // Get the gyro heading
+    std::cout << "Distance: " << gyro.get_value();
+    pros::delay(10);
+  }
+
 
 //Drive Control
 	while (true)
@@ -222,7 +232,7 @@ if (left_bumper.get_value() || right_bumper.get_value())
  			  }
 }
 //Arm control
-/*		if (master.get_digital(DIGITAL_R1))
+	if (master.get_digital(DIGITAL_R1))
 		{
       arm.move_velocity(100); // This is 100 because it's a 100rpm motor
     }
@@ -236,6 +246,7 @@ if (left_bumper.get_value() || right_bumper.get_value())
     }
 
 //Claw Control
+/*
 		if (master.get_digital(DIGITAL_L1))
 		{
       claw.move_velocity(100);
@@ -250,9 +261,9 @@ if (left_bumper.get_value() || right_bumper.get_value())
     }
 
     pros::delay(2);
-
-
 */
+
+
     //pros::delay(2);
 
 //Clawbot code for Arcade Control
@@ -270,7 +281,7 @@ pros::Motor left_wheels (LEFT_WHEELS_PORT);
     right_wheels.move(right);
 
     pros::delay(2);
-*/
+
 
 //Default PROS code
 	/*pros::Controller master(pros::E_CONTROLLER_MASTER);
