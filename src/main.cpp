@@ -9,6 +9,44 @@
 #define VISION_PORT 7
 
 #define ARM_PORT 1
+#define ADI_LEGACY_GYRO H
+pros::Motor left_wheels(LEFT_WHEELS_PORT,BACK_LEFT_WHEELS_PORT);
+pros::Motor right_wheels(RIGHT_WHEELS_PORT,BACK_RIGHT_WHEELS_PORT);
+pros::Motor back_wheels(BACK_LEFT_WHEELS_PORT,BACK_RIGHT_WHEELS_PORT);
+pros::Motor front_wheels(LEFT_WHEELS_PORT,RIGHT_WHEELS_PORT);
+
+void moveForward(int distance, int speed)
+{
+	left_wheels.move_relative(distance, speed);
+	right_wheels.move_relative(distance,speed);
+}
+
+void moveBackward(int distance, int speed);
+{
+	left_wheels.move_relative(-distance,-speed);
+	right_wheels.move_relative(-distance,-speed);
+}
+
+void shuffleLeft(int distance, int speed){
+	front_wheels.move_relative(-distance,-speed);
+	back_wheels.move_relative(distance,speed);
+}
+
+void shuffleRight(int distance, int speed) {
+	front_wheels.move_relative(distance,speed);
+	back_wheels.move_relative(-distance,-speed);
+}
+
+void turnLeft(int distance, int speed){
+	left_wheels.move_relative(-distance,-speed);
+	right_wheels.move_relative(distance,speed);
+}
+
+void turnRight(int distance, int speed) {
+	left_wheels.move_relative(distance,speed);
+	right_wheels.move_relative(-distance,-speed);
+}
+
 
 //#define CLAW_PORT 3
 
@@ -81,6 +119,8 @@ void initialize() {
 	//vision sensor
 
 	pros::lcd::register_btn1_cb(on_center_button);
+
+
 }
 
 /**
@@ -100,7 +140,7 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {}
-//zach wuz here
+
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -114,13 +154,9 @@ void competition_initialize() {}
  */
 void autonomous()
 {
-	//The autonomous program runs without the use of a controller.
-	//We will make a simple autonomous program that drives straight.
-	pros::Motor left_wheels (LEFT_WHEELS_PORT);
-  pros::Motor right_wheels (RIGHT_WHEELS_PORT, true); // This reverses the motor
+moveForward(2*1800,MOTOR_MAX_SPEED);
 
-  right_wheels.move_relative(1000, MOTOR_MAX_SPEED);
-  left_wheels.move_relative(1000, MOTOR_MAX_SPEED);
+
 }
 
 /**
@@ -169,8 +205,8 @@ void opcontrol() {
 	{
     int power = master.get_analog(ANALOG_LEFT_Y);
     int turn = master.get_analog(ANALOG_LEFT_X);
-    int left = -power - turn;
-    int right = power - turn;
+    int left = power + turn;
+    int right = -power - turn;
 
 //Bumper Switch Controls
 if (left_bumper.get_value() || right_bumper.get_value())
@@ -186,14 +222,13 @@ if (left_bumper.get_value() || right_bumper.get_value())
 	}
 }
 
-	//if(power > 5)
-/*
-    left_wheels.move(left);
+while(left_bumper.get_value() < 0 ) {
+    left_wheels.move(right);
 		back_left_wheels.move(left);
     right_wheels.move(right);
-		back_right_wheels.move(right);
+		back_right_wheels.move(left);
+}
 
-*/
 
 
 		while (master.get_digital(DIGITAL_A))
@@ -201,7 +236,7 @@ if (left_bumper.get_value() || right_bumper.get_value())
 		      arm.move_relative(1800,100); // This is 100 because it's a 100rpm motor
 		    }
 		while (master.get_digital(DIGITAL_B)){
-//wrgwrgwtgwrgwtgrs
+
 				 // Gets the largest object
 				 //std::cout << "sig: " << rtn.signature;
 				 //pros::delay(2);
@@ -212,7 +247,7 @@ if (left_bumper.get_value() || right_bumper.get_value())
  			    std::cout << "sig: " << obj.signature;
  			    pros::delay(2);
 					double cord = obj.x_middle_coord;
-					if (cord > 316/2)
+					if (cord < 316/2)
 					{
 						left_wheels.move_relative(1800,100);
 						back_left_wheels.move_relative(1800, 100);
