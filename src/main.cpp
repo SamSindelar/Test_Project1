@@ -20,6 +20,49 @@
 
 #define MOTOR_MAX_SPEED 100 // The motor has the 36 Gearset
 
+
+pros::Motor backLeft(BACK_LEFT_WHEELS_PORT);
+pros::Motor backRight(BACK_RIGHT_WHEELS_PORT);
+
+
+
+pros::Motor left_wheels(LEFT_WHEELS_PORT,BACK_LEFT_WHEELS_PORT);
+pros::Motor right_wheels(RIGHT_WHEELS_PORT,BACK_RIGHT_WHEELS_PORT);
+pros::Motor back_wheels(BACK_LEFT_WHEELS_PORT,BACK_RIGHT_WHEELS_PORT);
+pros::Motor front_wheels(LEFT_WHEELS_PORT,RIGHT_WHEELS_PORT);
+
+void moveForward(int distance, int speed)
+{
+	left_wheels.move_relative(distance, speed);
+	right_wheels.move_relative(distance,speed);
+}
+
+void moveBackward(int distance, int speed)
+{
+	left_wheels.move_relative(-distance,-speed);
+	right_wheels.move_relative(-distance,-speed);
+}
+
+void shuffleLeft(int distance, int speed){
+	front_wheels.move_relative(-distance,-speed);
+	back_wheels.move_relative(distance,speed);
+}
+
+void shuffleRight(int distance, int speed) {
+	front_wheels.move_relative(distance,speed);
+	back_wheels.move_relative(-distance,-speed);
+}
+
+void turnLeft(int distance, int speed){
+	left_wheels.move_relative(-distance,-speed);
+	right_wheels.move_relative(distance,speed);
+}
+
+void turnRight(int distance, int speed) {
+	left_wheels.move_relative(distance,speed);
+	right_wheels.move_relative(-distance,-speed);
+}
+
 //using namespace std;
 
 
@@ -115,13 +158,9 @@ void competition_initialize() {}
  */
 void autonomous()
 {
-	//The autonomous program runs without the use of a controller.
-	//We will make a simple autonomous program that drives straight.
-	pros::Motor left_wheels (FRONT_LEFT_WHEELS_PORT);
-  pros::Motor right_wheels (FRONT_RIGHT_WHEELS_PORT, true); // This reverses the motor
+	moveForward(2*1800,MOTOR_MAX_SPEED);
+	turnLeft(1800/4,MOTOR_MAX_SPEED);
 
-  right_wheels.move_relative(1000, MOTOR_MAX_SPEED);
-  left_wheels.move_relative(1000, MOTOR_MAX_SPEED);
 }
 
 /**
