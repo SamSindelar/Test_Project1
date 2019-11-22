@@ -1,52 +1,15 @@
 #include "main.h"
 
-#define BACK_LEFT_WHEELS_PORT 4
-#define BACK_RIGHT_WHEELS_PORT 12
-
-#define LEFT_WHEELS_PORT 9
-#define RIGHT_WHEELS_PORT 3
+#define BACK_LEFT_WHEEL_PORT 3
+#define BACK_RIGHT_WHEEL_PORT 4
+#define FRONT_LEFT_WHEELS_PORT 1
+#define FRONT_RIGHT_WHEELS_PORT 2
 
 #define VISION_PORT 7
 
-#define ARM_PORT 1
-#define ADI_LEGACY_GYRO H
-pros::Motor left_wheels(LEFT_WHEELS_PORT,BACK_LEFT_WHEELS_PORT);
-pros::Motor right_wheels(RIGHT_WHEELS_PORT,BACK_RIGHT_WHEELS_PORT);
-pros::Motor back_wheels(BACK_LEFT_WHEELS_PORT,BACK_RIGHT_WHEELS_PORT);
-pros::Motor front_wheels(LEFT_WHEELS_PORT,RIGHT_WHEELS_PORT);
+#define GYRO_PORT 12
 
-void moveForward(int distance, int speed)
-{
-	left_wheels.move_relative(distance, speed);
-	right_wheels.move_relative(distance,speed);
-}
-
-void moveBackward(int distance, int speed);
-{
-	left_wheels.move_relative(-distance,-speed);
-	right_wheels.move_relative(-distance,-speed);
-}
-
-void shuffleLeft(int distance, int speed){
-	front_wheels.move_relative(-distance,-speed);
-	back_wheels.move_relative(distance,speed);
-}
-
-void shuffleRight(int distance, int speed) {
-	front_wheels.move_relative(distance,speed);
-	back_wheels.move_relative(-distance,-speed);
-}
-
-void turnLeft(int distance, int speed){
-	left_wheels.move_relative(-distance,-speed);
-	right_wheels.move_relative(distance,speed);
-}
-
-void turnRight(int distance, int speed) {
-	left_wheels.move_relative(distance,speed);
-	right_wheels.move_relative(-distance,-speed);
-}
-
+#define ARM_PORT 13
 
 //#define CLAW_PORT 3
 
@@ -84,7 +47,7 @@ void turnRight(int distance, int speed) {
 
 
 
-
+// THIS IS A TEST FOR THE FIRST COMMIT TO BRANCH Sam_S
 
 /**
  * A callback function for LLEMU's center button.
@@ -119,8 +82,6 @@ void initialize() {
 	//vision sensor
 
 	pros::lcd::register_btn1_cb(on_center_button);
-
-
 }
 
 /**
@@ -154,10 +115,13 @@ void competition_initialize() {}
  */
 void autonomous()
 {
-moveForward(2*1800,MOTOR_MAX_SPEED);
-turnLeft(1800/4,MOTOR_MAX_SPEED);
+	//The autonomous program runs without the use of a controller.
+	//We will make a simple autonomous program that drives straight.
+	pros::Motor left_wheels (FRONT_LEFT_WHEELS_PORT);
+  pros::Motor right_wheels (FRONT_RIGHT_WHEELS_PORT, true); // This reverses the motor
 
-
+  right_wheels.move_relative(1000, MOTOR_MAX_SPEED);
+  left_wheels.move_relative(1000, MOTOR_MAX_SPEED);
 }
 
 /**
@@ -175,10 +139,16 @@ turnLeft(1800/4,MOTOR_MAX_SPEED);
  */
 void opcontrol() {
 //Clawbot code for Drive Control
-	pros::Motor left_wheels (LEFT_WHEELS_PORT);
-	pros::Motor back_left_wheels (BACK_LEFT_WHEELS_PORT);
-  pros::Motor right_wheels (RIGHT_WHEELS_PORT);
-	pros::Motor back_right_wheels (BACK_RIGHT_WHEELS_PORT);
+	pros::Motor left_wheels (FRONT_LEFT_WHEELS_PORT, BACK_LEFT_WHEEL_PORT);
+	pros::Motor right_wheels (FRONT_RIGHT_WHEELS_PORT, BACK_RIGHT_WHEEL_PORT);
+
+	pros::Motor back_wheels (BACK_LEFT_WHEEL_PORT, BACK_RIGHT_WHEEL_PORT);
+	pros::Motor front_wheels (FRONT_LEFT_WHEELS_PORT, FRONT_RIGHT_WHEELS_PORT);
+
+	pros::Motor back_left_wheel (BACK_LEFT_WHEEL_PORT);
+	pros::Motor back_right_wheel (BACK_RIGHT_WHEEL_PORT);
+	pros::Motor front_left_wheels (FRONT_LEFT_WHEELS_PORT);
+	pros::Motor front_right_wheels (FRONT_RIGHT_WHEELS_PORT);
 
 	//Vision Sensor stuff
 	pros::Vision vision_sensor (VISION_PORT);
@@ -199,132 +169,19 @@ void opcontrol() {
 
   pros::Controller master (CONTROLLER_MASTER);
 
-
-
 //Drive Control
 	while (true)
 	{
     int power = master.get_analog(ANALOG_LEFT_Y);
     int turn = master.get_analog(ANALOG_LEFT_X);
-    int left = power + turn;
-    int right = -power - turn;
+    int back_left = -power + turn;
+    int back_right = power - turn;
+		int front_left = -power + turn;
+		int front_right = power - turn;
 
-//Bumper Switch Controls
-if (left_bumper.get_value() || right_bumper.get_value())
-{
-	// One of the bump switches is currently pressed
-	if (left < 0)
-	{
-		left = 0;
-	}
-	if (right < 0)
-	{
-		right = 0;
-	}
-}
-
-while(left_bumper.get_value() < 0 ) {
-    left_wheels.move(right);
-		back_left_wheels.move(left);
-    right_wheels.move(right);
-		back_right_wheels.move(left);
-}
-
-
-
-		while (master.get_digital(DIGITAL_A))
-				{
-		      arm.move_relative(1800,100); // This is 100 because it's a 100rpm motor
-		    }
-		while (master.get_digital(DIGITAL_B)){
-
-				 // Gets the largest object
-				 //std::cout << "sig: " << rtn.signature;
-				 //pros::delay(2);
-				 while (true)
-				 {
- 			    pros::vision_object_s_t obj = vision_sensor.get_by_sig(0,1);
- 			    // Gets the largest object
- 			    std::cout << "sig: " << obj.signature;
- 			    pros::delay(2);
-					double cord = obj.x_middle_coord;
-					if (cord < 316/2)
-					{
-						left_wheels.move_relative(1800,100);
-						back_left_wheels.move_relative(1800, 100);
-				    right_wheels.move_relative(-1800,100);
-						back_right_wheels.move_relative(-1800, 100);
-					}
- 			  }
-}
-//Arm control
-/*		if (master.get_digital(DIGITAL_R1))
-		{
-      arm.move_velocity(100); // This is 100 because it's a 100rpm motor
-    }
-    else if (master.get_digital(DIGITAL_R2) && !arm_limit.get_value())
-		{
-      arm.move_velocity(-100);
-    }
-    else
-		{
-      arm.move_velocity(0);
-    }
-
-//Claw Control
-		if (master.get_digital(DIGITAL_L1))
-		{
-      claw.move_velocity(100);
-    }
-    else if (master.get_digital(DIGITAL_L2))
-		{
-      claw.move_velocity(-100);
-    }
-    else
-		{
-      claw.move_velocity(0);
-    }
-
-    pros::delay(2);
-
-
-*/
-    //pros::delay(2);
-
-//Clawbot code for Arcade Control
-/*
-pros::Motor left_wheels (LEFT_WHEELS_PORT);
-  pros::Motor right_wheels (RIGHT_WHEELS_PORT, true);
-  pros::Controller master (CONTROLLER_MASTER);
-
-  while (true) {
-    int power = master.get_analog(ANALOG_LEFT_Y);
-    int turn = master.get_analog(ANALOG_RIGHT_X);
-    int left = power + turn;
-    int right = power - turn;
-    left_wheels.move(left);
-    right_wheels.move(right);
-
-    pros::delay(2);
-*/
-
-//Default PROS code
-	/*pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor left_mtr(1);
-	pros::Motor right_mtr(2);
-
-
-	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		int left = master.get_analog(ANALOG_LEFT_Y);
-		int right = master.get_analog(ANALOG_RIGHT_Y);
-
-		left_mtr = left;
-		right_mtr = right;
-		pros::delay(20);
-
-		*/
-	}
+		front_left_wheels.move(front_left);
+		back_left_wheel.move(back_left);
+		front_right_wheels.move(front_right);
+		back_right_wheel.move(back_right);
+ }
 }
