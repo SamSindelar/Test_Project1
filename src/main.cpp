@@ -8,6 +8,8 @@
 
 #define VISION_PORT 7
 
+#define GYRO_PORT 2
+
 #define ARM_PORT 1
 
 //#define CLAW_PORT 3
@@ -163,6 +165,14 @@ void opcontrol() {
   pros::Controller master (CONTROLLER_MASTER);
 
 
+//GYRO stuff
+pros::ADIGyro gyro (GYRO_PORT);
+  while (true) {
+    // Get the gyro heading
+    std::cout << "Distance: " << gyro.get_value();
+    pros::delay(10);
+  }
+
 
 //Drive Control
 	while (true)
@@ -236,6 +246,7 @@ if (left_bumper.get_value() || right_bumper.get_value())
     }
 
 //Claw Control
+/*
 		if (master.get_digital(DIGITAL_L1))
 		{
       claw.move_velocity(100);
@@ -250,7 +261,7 @@ if (left_bumper.get_value() || right_bumper.get_value())
     }
 
     pros::delay(2);
-
+*/
 
 
     //pros::delay(2);
